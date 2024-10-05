@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:c="http://www.springframework.org/schema/c"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/context 
+           http://www.springframework.org/schema/context/spring-context.xsd
+           http://www.springframework.org/schema/tx 
+           http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <!-- Enable component scanning -->
+    <context:component-scan base-package="com.example"/>
+
+    <!-- Enable transaction management -->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+    <bean class="org.springframework.jdbc.datasource.DriverManagerDataSource" name="ds">
+      <property name="driverClassName">
+            <value>org.postgresql.Driver</value>
+      </property>
+      <property name="url">
+            <value>jdbc:postgresql://localhost:5432/springjdbc</value>
+      </property>
+      <property name="username">
+            <value>postgres</value>
+      </property>
+      <property name="password">
+            <value>Shaad#98</value>
+      </property>
+    </bean>
+
+    <bean class="org.springframework.orm.hibernate5.LocalSessionFactoryBean" name="factory">
+      <property name="dataSource">
+            <ref bean="ds"/>
+      </property>
+      <property name="hibernateProperties">
+            <props>
+                  <prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
+                  <prop key="hibernate.show_sql">true</prop>
+                  <prop key="hibernate.format_sql">true</prop>
+                  <prop key="hibernate.hbm2ddl.auto">update</prop>
+            </props>
+      </property>
+      <property name="annotatedClasses">
+            <list>
+                  <value>com.entities.Student</value>
+            </list>
+      </property>
+    </bean>
+
+    <bean class="org.springframework.orm.hibernate5.HibernateTemplate" name="template">
+      <property name="sessionFactory">
+            <ref  bean="factory"/>
+      </property>
+    </bean>
+
+      <bean class="com.dao.StudentDaoImpl" name="s">
+            <property name="hibernateTemplate">
+                  <ref  bean="template"/>
+            </property>
+      </bean>
+
+    <!-- TransactionManager bean -->
+    <bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager"
+          c:sessionFactory-ref="factory"/>
+
+   
+</beans>
